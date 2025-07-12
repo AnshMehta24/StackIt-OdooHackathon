@@ -7,3 +7,17 @@ export function useUser() {
     queryFn: userService.getUser,
   });
 }
+
+export function useUserQuestions() {
+  return useQuery({
+    queryKey: ["user_questions"],
+    queryFn: () => userService.getUserQuestions(),
+  });
+}
+
+export function useAnsweredQuestions() {
+  return useQuery({
+    queryKey: ["answered_questions"],
+    queryFn: userService.getAnsweredQuestions,
+  });
+}
