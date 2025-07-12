@@ -4,6 +4,7 @@ import { questions, answers, users, votes } from "@/db/schema/schema";
 import { count, eq, inArray, sql } from "drizzle-orm";
 import { AuthenticatedRequest, authMiddleware } from "@/middleware";
 import { questionSchema } from "@/schema/questionSchema";
+import { errorResponse, successResponse } from "@/common";
 
 const questionRouteHandler = express.Router();
 
@@ -16,30 +17,36 @@ questionRouteHandler.post(
     const validation = questionSchema.safeParse(req.body);
 
     if (!validation.success) {
-      return res.status(400).json({
-        error: "Validation failed",
-        details: validation.error.flatten().fieldErrors,
-      });
+      console.error(validation.error.flatten().fieldErrors);
+      return res.status(400).json(
+        errorResponse({
+          message: "Validation failed",
+        })
+      );
     }
 
     // If valid, insert into DB
-    const { title, description, tags } = validation.data;
+    const { title, content, tags } = validation.data;
 
-    if (!title || !description || !Array.isArray(tags)) {
-      return res.status(400).json({ error: "Missing required fields" });
+    if (!title || !content || !Array.isArray(tags)) {
+      return res
+        .status(400)
+        .json(errorResponse({ message: "Missing required fields" }));
     }
 
     try {
       await db.insert(questions).values({
         title,
-        description,
+        description: content,
         userId,
         tags,
       });
-      res.status(201).json({ message: "Question created" });
+      res.status(201).json(successResponse({ message: "Question created" }));
     } catch (err) {
       console.error("Insert Error:", err);
-      res.status(500).json({ error: "Failed to insert question" });
+      res
+        .status(500)
+        .json(errorResponse({ message: "Failed to insert question" }));
     }
   }
 );
@@ -72,10 +79,12 @@ questionRouteHandler.get("/", async (req, res) => {
           .from(questions)
           .innerJoin(users, eq(questions.userId, users.id));
 
-    res.status(200).json({ data: result });
+    res.status(200).json(successResponse({ data: result }));
   } catch (err) {
     console.error("Fetch Error:", err);
-    res.status(500).json({ error: "Failed to fetch questions" });
+    res
+      .status(500)
+      .json(errorResponse({ message: "Failed to fetch questions" }));
   }
 });
 
@@ -96,7 +105,9 @@ questionRouteHandler.get("/:id", async (req, res) => {
       .where(eq(questions.id, questionId));
 
     if (!questionWithAuthor.length) {
-      return res.status(404).json({ error: "Question not found" });
+      return res
+        .status(404)
+        .json(errorResponse({ message: "Question not found" }));
     }
 
     const answersWithUser = await db
@@ -132,18 +143,24 @@ questionRouteHandler.get("/:id", async (req, res) => {
       }
     }
 
-    res.status(200).json({
-      question: questionWithAuthor[0].question,
-      author: questionWithAuthor[0].author,
-      answers: answersWithUser,
-      voteStats: {
-        upvotes,
-        downvotes,
-      },
-    });
+    res.status(200).json(
+      successResponse({
+        data: {
+          question: questionWithAuthor[0].question,
+          author: questionWithAuthor[0].author,
+          answers: answersWithUser,
+          voteStats: {
+            upvotes,
+            downvotes,
+          },
+        },
+      })
+    );
   } catch (err) {
     console.error("Fetch Single Error:", err);
-    res.status(500).json({ error: "Failed to fetch question" });
+    res
+      .status(500)
+      .json(errorResponse({ message: "Failed to fetch question" }));
   }
 });
 
@@ -161,10 +178,12 @@ questionRouteHandler.put("/:id", async (req, res) => {
       })
       .where(eq(questions.id, questionId));
 
-    res.status(200).json({ message: "Question updated" });
+    res.status(200).json(successResponse({ message: "Question updated" }));
   } catch (err) {
     console.error("Update Error:", err);
-    res.status(500).json({ error: "Failed to update question" });
+    res
+      .status(500)
+      .json(errorResponse({ message: "Failed to update question" }));
   }
 });
 
@@ -181,23 +200,29 @@ questionRouteHandler.delete(
         .where(eq(questions.id, questionId));
 
       if (!question.length) {
-        return res.status(404).json({ error: "Question not found" });
+        return res
+          .status(404)
+          .json(errorResponse({ message: "Question not found" }));
       }
 
       const isOwner = question[0].userId === req.user?.userId;
 
       if (!isOwner) {
-        return res
-          .status(403)
-          .json({ error: "Forbidden: You can only delete your own question" });
+        return res.status(403).json(
+          errorResponse({
+            message: "Forbidden: You can only delete your own question",
+          })
+        );
       }
 
       await db.delete(questions).where(eq(questions.id, questionId));
 
-      res.status(200).json({ message: "Question deleted" });
+      res.status(200).json(successResponse({ message: "Question deleted" }));
     } catch (err) {
       console.error("Delete Error:", err);
-      res.status(500).json({ error: "Failed to delete question" });
+      res
+        .status(500)
+        .json(errorResponse({ message: "Failed to delete question" }));
     }
   }
 );

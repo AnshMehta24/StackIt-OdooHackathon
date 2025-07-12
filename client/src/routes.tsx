@@ -6,17 +6,18 @@ import QuestionDetailPage from "./pages/QuestionDetailPage";
 import TagsPage from "./pages/TagsPage";
 import NotFound from "./pages/NotFound";
 import AuthPage from "./pages/AuthPage";
-
+import ProtectedRoute from "./layout/ProtectedRoute";
 
 const routes = () => {
   return (
     <Routes>
       <Route path="/" element={<Home />} />
-      <Route path="/" element={<QuestionsPage />} />
-      <Route path="/ask" element={<AskQuestionPage />} />
+
+      <Route element={<ProtectedRoute />}>
+        <Route path="/ask" element={<AskQuestionPage />} />
+      </Route>
       <Route path="/questions/:id" element={<QuestionDetailPage />} />
-      <Route path="/tags" element={<TagsPage />} />
-      <Route path="/tags/:tag" element={<QuestionsPage />} />
+      {/* <Route path="/tags" element={<TagsPage />} /> */}
       {/* <Route path="/users/:username" element={<UserProfilePage />} /> */}
       {/* <Route path="/profile" element={<UserProfilePage />} /> */}
       <Route path="*" element={<NotFound />} />

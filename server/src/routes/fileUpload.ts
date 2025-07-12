@@ -2,6 +2,7 @@ import express from "express";
 import multer from "multer";
 import path from "path";
 import fs from "fs";
+import { errorResponse, successResponse } from "@/common";
 
 const uploadRouteHandler = express.Router();
 
@@ -23,16 +24,20 @@ const upload = multer({ storage });
 
 uploadRouteHandler.post("/", upload.single("file"), (req, res) => {
   if (!req.file) {
-    return res.status(400).json({ error: "No file uploaded" });
+    return res.status(400).json(errorResponse({ message: "No file uploaded" }));
   }
 
   const publicPath = `/images/${req.file.filename}`;
 
-  res.status(201).json({
-    message: "File uploaded successfully",
-    filePath: publicPath,
-    fullUrl: `${req.protocol}://${req.get("host")}${publicPath}`,
-  });
+  res.status(201).json(
+    successResponse({
+      data: {
+        filePath: publicPath,
+        fullUrl: `${req.protocol}://${req.get("host")}${publicPath}`,
+      },
+      message: "File uploaded successfully",
+    })
+  );
 });
 
 export default uploadRouteHandler;

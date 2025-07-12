@@ -24,11 +24,11 @@ const Header = () => {
   };
 
   return (
-    <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-      <div className="container mx-auto flex h-nav items-center justify-between px-4">
+    <header className="sticky top-0 z-50 p-4 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+      <div className="container mx-auto flex h-nav items-center justify-between ">
         {/* Logo */}
         <Link to="/" className="flex items-center space-x-2">
-          <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary text-primary-foreground font-bold text-lg">
+          <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary text-foreground font-bold text-lg">
             S
           </div>
           <span className="text-xl font-bold">StackIt</span>
@@ -51,7 +51,7 @@ const Header = () => {
         {/* Right Side Actions */}
         <div className="flex items-center space-x-4">
           {/* Ask Question Button */}
-          <Button asChild className="hidden sm:flex">
+          <Button asChild className="hidden sm:flex text-foreground">
             <Link to="/ask">
               <Plus className="h-4 w-4 mr-2" />
               Ask Question
@@ -71,8 +71,8 @@ const Header = () => {
               <Button variant="ghost" size="icon" className="relative">
                 <Bell className="h-5 w-5" />
                 {unreadNotifications > 0 && (
-                  <Badge 
-                    variant="destructive" 
+                  <Badge
+                    variant="destructive"
                     className="absolute -top-1 -right-1 h-5 w-5 flex items-center justify-center p-0 text-xs"
                   >
                     {unreadNotifications}
@@ -90,7 +90,9 @@ const Header = () => {
                     <AvatarFallback>JD</AvatarFallback>
                   </Avatar>
                   <div className="flex-1 space-y-1">
-                    <p className="text-sm font-medium">New answer on your question</p>
+                    <p className="text-sm font-medium">
+                      New answer on your question
+                    </p>
                     <p className="text-xs text-muted-foreground">
                       "How to implement authentication in React?"
                     </p>
@@ -105,7 +107,9 @@ const Header = () => {
                     <AvatarFallback>SM</AvatarFallback>
                   </Avatar>
                   <div className="flex-1 space-y-1">
-                    <p className="text-sm font-medium">Your answer was accepted</p>
+                    <p className="text-sm font-medium">
+                      Your answer was accepted
+                    </p>
                     <p className="text-xs text-muted-foreground">
                       "Best practices for TypeScript"
                     </p>
@@ -123,7 +127,10 @@ const Header = () => {
           {/* User Menu */}
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              <Button variant="ghost" className="relative h-10 w-10 rounded-full">
+              <Button
+                variant="ghost"
+                className="relative h-10 w-10 rounded-full"
+              >
                 <Avatar>
                   <AvatarImage src="/avatars/current-user.jpg" />
                   <AvatarFallback>
@@ -143,12 +150,8 @@ const Header = () => {
                 <Link to="/answers">Your Answers</Link>
               </DropdownMenuItem>
               <DropdownMenuSeparator />
-              <DropdownMenuItem>
-                Settings
-              </DropdownMenuItem>
-              <DropdownMenuItem>
-                Sign out
-              </DropdownMenuItem>
+              <DropdownMenuItem>Settings</DropdownMenuItem>
+              <DropdownMenuItem>Sign out</DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
         </div>

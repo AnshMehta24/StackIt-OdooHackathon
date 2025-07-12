@@ -1,71 +1,112 @@
-import { useState } from "react";
+import { useRef } from "react";
+import { useNavigate } from "react-router";
+import { useForm } from "react-hook-form";
+import { z } from "zod";
+import { zodResolver } from "@hookform/resolvers/zod";
 import Header from "@/components/layout/Header";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
-import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { X, Plus, Eye, Edit3 } from "lucide-react";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { useNavigate } from "react-router";
+import { X, Plus } from "lucide-react";
+import { Editor } from "@tinymce/tinymce-react";
+import {
+  Form,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormControl,
+  FormMessage,
+} from "@/components/ui/form";
+import RHFTextInput from "@/components/RHF/RHFTextInput";
+import { Input } from "@/components/ui/input";
+import { useUploadFile } from "@/hooks/upload";
+import { toast } from "sonner";
+import { useAddQuestion } from "@/hooks/services/questions";
+
+const formSchema = z.object({
+  title: z.string().min(10, "Title must be at least 10 characters"),
+  tags: z
+    .array(z.string())
+    .min(1, "Add at least one tag")
+    .max(5, "Maximum 5 tags"),
+});
+
+type FormData = z.infer<typeof formSchema>;
 
 const AskQuestionPage = () => {
   const navigate = useNavigate();
-  const [title, setTitle] = useState("");
-  const [content, setContent] = useState("");
-  const [tags, setTags] = useState<string[]>([]);
-  const [currentTag, setCurrentTag] = useState("");
-  const [isSubmitting, setIsSubmitting] = useState(false);
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const editorRef = useRef<any>(null);
+  const form = useForm<FormData>({
+    resolver: zodResolver(formSchema),
+    defaultValues: {
+      title: "",
+      tags: [],
+    },
+  });
 
-  const popularTags = [
-    "react", "typescript", "javascript", "node.js", "next.js", 
-    "tailwind-css", "python", "css", "html", "git"
-  ];
+  const { watch, setValue } = form;
+  const tags = watch("tags");
+  const currentTagRef = useRef("");
+
+  const uploadFileMutation = useUploadFile();
+  const addQuestionMutation = useAddQuestion();
 
   const handleAddTag = (tag: string) => {
-    const trimmedTag = tag.trim().toLowerCase();
-    if (trimmedTag && !tags.includes(trimmedTag) && tags.length < 5) {
-      setTags([...tags, trimmedTag]);
-      setCurrentTag("");
+    const trimmed = tag.trim().toLowerCase();
+    if (trimmed && !tags.includes(trimmed) && tags.length < 5) {
+      setValue("tags", [...tags, trimmed]);
+      currentTagRef.current = "";
     }
   };
 
   const handleRemoveTag = (tagToRemove: string) => {
-    setTags(tags.filter(tag => tag !== tagToRemove));
+    setValue(
+      "tags",
+      tags.filter((tag) => tag !== tagToRemove)
+    );
   };
 
-  const handleKeyPress = (e: React.KeyboardEvent) => {
-    if (e.key === "Enter" || e.key === ",") {
-      e.preventDefault();
-      handleAddTag(currentTag);
-    }
-  };
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!title.trim() || !content.trim() || tags.length === 0) {
+  const handleSubmit = async (values: FormData) => {
+    const content = editorRef.current?.getContent();
+    if (!content || content.trim() === "") {
+      toast.error("Wait for Editor to load. Or Refresh the window.");
       return;
     }
 
-    setIsSubmitting(true);
-    
-    // Simulate API call
-    setTimeout(() => {
-      console.log("Question submitted:", { title, content, tags });
-      navigate("/");
-    }, 1000);
+    const c = content as string;
+    const data = { ...values, content: c };
+    await toast.promise(addQuestionMutation.mutateAsync(data), {
+      loading: "Adding Question...",
+      success: () => {
+        navigate("/");
+        return "Question Added successfully!";
+      },
+      error: (err) => {
+        return err instanceof Error ? err.message : "Something went wrong";
+      },
+    });
+    navigate("/");
   };
 
-  const previewContent = content || "Your question will appear here as you type...";
+  const popularTags = [
+    "react",
+    "typescript",
+    "javascript",
+    "node.js",
+    "next.js",
+    "tailwind-css",
+    "python",
+    "css",
+    "html",
+    "git",
+  ];
 
   return (
     <div className="min-h-screen bg-background">
       <Header />
-      
       <div className="container mx-auto px-4 py-6">
         <div className="max-w-4xl mx-auto">
-          {/* Page Header */}
           <div className="mb-8">
             <h1 className="text-3xl font-bold mb-2">Ask a Question</h1>
             <p className="text-muted-foreground">
@@ -74,176 +115,224 @@ const AskQuestionPage = () => {
           </div>
 
           <div className="grid lg:grid-cols-3 gap-8">
-            {/* Main Form */}
             <div className="lg:col-span-2">
-              <form onSubmit={handleSubmit} className="space-y-6">
-                {/* Title */}
-                <Card>
-                  <CardHeader>
-                    <CardTitle>Title</CardTitle>
-                  </CardHeader>
-                  <CardContent>
-                    <Label htmlFor="title" className="text-sm text-muted-foreground mb-2 block">
-                      Be specific and imagine you're asking a question to another person
-                    </Label>
-                    <Input
-                      id="title"
-                      value={title}
-                      onChange={(e) => setTitle(e.target.value)}
-                      placeholder="e.g. How to implement authentication in React with TypeScript?"
-                      className="text-lg"
-                      required
-                    />
-                  </CardContent>
-                </Card>
-
-                {/* Content */}
-                <Card>
-                  <CardHeader>
-                    <CardTitle>Question Details</CardTitle>
-                  </CardHeader>
-                  <CardContent>
-                    <Tabs defaultValue="write" className="w-full">
-                      <TabsList className="grid w-full grid-cols-2 mb-4">
-                        <TabsTrigger value="write" className="flex items-center space-x-2">
-                          <Edit3 className="h-4 w-4" />
-                          <span>Write</span>
-                        </TabsTrigger>
-                        <TabsTrigger value="preview" className="flex items-center space-x-2">
-                          <Eye className="h-4 w-4" />
-                          <span>Preview</span>
-                        </TabsTrigger>
-                      </TabsList>
-                      
-                      <TabsContent value="write">
-                        <Label htmlFor="content" className="text-sm text-muted-foreground mb-2 block">
-                          Include all the information someone would need to answer your question
-                        </Label>
-                        <Textarea
-                          id="content"
-                          value={content}
-                          onChange={(e) => setContent(e.target.value)}
-                          placeholder="Provide details about your problem, what you've tried, and what you expect to happen..."
-                          className="min-h-[200px] resize-none"
-                          required
+              <Form {...form}>
+                <form
+                  onSubmit={form.handleSubmit(handleSubmit)}
+                  className="grid lg:grid-cols-3 gap-8 w-full"
+                >
+                  <div className="lg:col-span-3 space-y-6">
+                    <Card>
+                      <CardHeader>
+                        <CardTitle>Title</CardTitle>
+                      </CardHeader>
+                      <CardContent>
+                        <FormField
+                          control={form.control}
+                          name="title"
+                          render={({ field }) => (
+                            <FormItem>
+                              <FormLabel>
+                                Be specific and imagine you're asking a question
+                                to another person
+                              </FormLabel>
+                              <FormControl>
+                                <RHFTextInput
+                                  placeholder="e.g. How to implement authentication in React with TypeScript?"
+                                  {...field}
+                                />
+                              </FormControl>
+                              <FormMessage />
+                            </FormItem>
+                          )}
                         />
-                      </TabsContent>
-                      
-                      <TabsContent value="preview">
-                        <div className="min-h-[200px] p-4 border rounded-md bg-muted/30">
-                          <p className="whitespace-pre-wrap text-sm">
-                            {previewContent}
-                          </p>
-                        </div>
-                      </TabsContent>
-                    </Tabs>
-                  </CardContent>
-                </Card>
+                      </CardContent>
+                    </Card>
 
-                {/* Tags */}
-                <Card>
-                  <CardHeader>
-                    <CardTitle>Tags</CardTitle>
-                  </CardHeader>
-                  <CardContent>
-                    <Label className="text-sm text-muted-foreground mb-2 block">
-                      Add up to 5 tags to describe what your question is about
-                    </Label>
-                    
-                    <div className="space-y-4">
-                      {/* Tag Input */}
-                      <div className="flex space-x-2">
-                        <Input
-                          value={currentTag}
-                          onChange={(e) => setCurrentTag(e.target.value)}
-                          onKeyDown={handleKeyPress}
-                          placeholder="Type a tag and press Enter"
-                          className="flex-1"
-                          disabled={tags.length >= 5}
+                    <Card>
+                      <CardHeader>
+                        <CardTitle>Question Details</CardTitle>
+                      </CardHeader>
+                      <CardContent>
+                        <Editor
+                          onInit={(evt, editor) => {
+                            editorRef.current = editor;
+
+                            editor.on("change", () => {
+                              console.log("Content changed");
+                            });
+                          }}
+                          apiKey={import.meta.env.VITE_TINYMCE_API_KEY}
+                          init={{
+                            height: 300,
+                            plugins: "image link lists code",
+                            toolbar:
+                              "undo redo | formatselect | bold italic | image | code",
+                            images_upload_handler: async (
+                              blobInfo: {
+                                blob: () => Blob;
+                                filename: () => string | undefined;
+                              },
+                              // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                              success: (arg0: any) => void,
+                              failure: (arg0: string) => void
+                            ) => {
+                              try {
+                                const formData = new FormData();
+                                formData.append(
+                                  "file",
+                                  blobInfo.blob(),
+                                  blobInfo.filename()
+                                );
+
+                                const res =
+                                  await uploadFileMutation.mutateAsync(
+                                    formData
+                                  );
+
+                                const { data } = res;
+                                console.log(data);
+                                success(data.filePath);
+                              } catch (err) {
+                                console.error(err);
+                                failure("Upload failed");
+                              }
+                            },
+                          }}
                         />
-                        <Button
-                          type="button"
-                          onClick={() => handleAddTag(currentTag)}
-                          disabled={!currentTag.trim() || tags.length >= 5}
-                          size="icon"
-                        >
-                          <Plus className="h-4 w-4" />
-                        </Button>
-                      </div>
+                      </CardContent>
+                    </Card>
 
-                      {/* Selected Tags */}
-                      {tags.length > 0 && (
-                        <div className="flex flex-wrap gap-2">
-                          {tags.map((tag, index) => (
-                            <Badge
-                              key={index}
-                              variant="secondary"
-                              className="bg-tag-bg text-tag-text border-tag-border px-3 py-1"
-                            >
-                              {tag}
-                              <button
-                                type="button"
-                                onClick={() => handleRemoveTag(tag)}
-                                className="ml-2 hover:text-destructive"
+                    <Card>
+                      <CardHeader>
+                        <CardTitle>Tags</CardTitle>
+                      </CardHeader>
+                      <CardContent className="space-y-4">
+                        <FormField
+                          control={form.control}
+                          name="tags"
+                          render={() => (
+                            <FormItem>
+                              <FormLabel>
+                                Add up to 5 tags to describe your question
+                              </FormLabel>
+                              <FormControl>
+                                <div className="flex space-x-2">
+                                  <Input
+                                    value={currentTagRef.current}
+                                    onChange={(e) =>
+                                      (currentTagRef.current = e.target.value)
+                                    }
+                                    onKeyDown={(e) => {
+                                      if (e.key === "Enter" || e.key === ",") {
+                                        e.preventDefault();
+                                        handleAddTag(currentTagRef.current);
+                                      }
+                                    }}
+                                    placeholder="Type a tag and press Enter"
+                                    disabled={tags.length >= 5}
+                                  />
+                                  <Button
+                                    type="button"
+                                    onClick={() =>
+                                      handleAddTag(currentTagRef.current)
+                                    }
+                                    disabled={
+                                      !currentTagRef.current.trim() ||
+                                      tags.length >= 5
+                                    }
+                                    size="icon"
+                                    className="text-foreground"
+                                  >
+                                    <Plus className="h-4 w-4" />
+                                  </Button>
+                                </div>
+                              </FormControl>
+                              <FormMessage />
+                            </FormItem>
+                          )}
+                        />
+
+                        {tags.length > 0 && (
+                          <div className="flex flex-wrap gap-2">
+                            {tags.map((tag, index) => (
+                              <Badge
+                                key={index}
+                                variant="secondary"
+                                className="bg-tag-bg text-tag-text border-tag-border px-3 py-1"
                               >
-                                <X className="h-3 w-3" />
-                              </button>
-                            </Badge>
-                          ))}
-                        </div>
-                      )}
+                                {tag}
+                                <button
+                                  type="button"
+                                  onClick={() => handleRemoveTag(tag)}
+                                  className="ml-2 hover:text-destructive"
+                                >
+                                  <X className="h-3 w-3" />
+                                </button>
+                              </Badge>
+                            ))}
+                          </div>
+                        )}
 
-                      {/* Popular Tags */}
-                      <div>
-                        <p className="text-sm font-medium mb-2">Popular tags:</p>
-                        <div className="flex flex-wrap gap-2">
-                          {popularTags
-                            .filter(tag => !tags.includes(tag))
-                            .slice(0, 8)
-                            .map((tag) => (
-                            <Button
-                              key={tag}
-                              type="button"
-                              variant="outline"
-                              size="sm"
-                              onClick={() => handleAddTag(tag)}
-                              disabled={tags.length >= 5}
-                              className="text-xs"
-                            >
-                              {tag}
-                            </Button>
-                          ))}
+                        <div>
+                          <p className="text-sm font-medium mb-2">
+                            Popular tags:
+                          </p>
+                          <div className="flex flex-wrap gap-2">
+                            {popularTags
+                              .filter((tag) => !tags.includes(tag))
+                              .slice(0, 8)
+                              .map((tag) => (
+                                <Button
+                                  key={tag}
+                                  type="button"
+                                  variant="outline"
+                                  size="sm"
+                                  onClick={() => handleAddTag(tag)}
+                                  disabled={tags.length >= 5}
+                                  className="text-xs"
+                                >
+                                  {tag}
+                                </Button>
+                              ))}
+                          </div>
                         </div>
-                      </div>
+                      </CardContent>
+                    </Card>
+
+                    <div className="flex space-x-4">
+                      <Button
+                        type="submit"
+                        disabled={form.formState.isSubmitting}
+                        className="px-8 text-foreground"
+                      >
+                        {form.formState.isSubmitting
+                          ? "Posting..."
+                          : "Post Question"}
+                      </Button>
+                      <Button
+                        type="button"
+                        variant="outline"
+                        onClick={() => navigate("/")}
+                      >
+                        Cancel
+                      </Button>
                     </div>
-                  </CardContent>
-                </Card>
+                  </div>
 
-                {/* Submit Button */}
-                <div className="flex space-x-4">
-                  <Button
-                    type="submit"
-                    disabled={!title.trim() || !content.trim() || tags.length === 0 || isSubmitting}
-                    className="px-8"
-                  >
-                    {isSubmitting ? "Posting..." : "Post Question"}
-                  </Button>
-                  <Button
-                    type="button"
-                    variant="outline"
-                    onClick={() => navigate("/")}
-                  >
-                    Cancel
-                  </Button>
-                </div>
-              </form>
+                  {/* Sidebar Tips */}
+                  <div className="lg:col-span-1">
+                    {/* Sidebar Cards – unchanged */}
+                  </div>
+                </form>
+              </Form>
             </div>
-
-            {/* Sidebar Tips */}
             <div className="lg:col-span-1">
               <Card>
                 <CardHeader>
-                  <CardTitle className="text-lg">How to ask a good question</CardTitle>
+                  <CardTitle className="text-lg">
+                    How to ask a good question
+                  </CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-4 text-sm">
                   <div>
@@ -253,7 +342,9 @@ const AskQuestionPage = () => {
                     </p>
                   </div>
                   <div>
-                    <h4 className="font-medium mb-1">2. Describe your problem</h4>
+                    <h4 className="font-medium mb-1">
+                      2. Describe your problem
+                    </h4>
                     <p className="text-muted-foreground">
                       Explain what you're trying to do and what happened instead
                     </p>
@@ -275,7 +366,9 @@ const AskQuestionPage = () => {
 
               <Card className="mt-6">
                 <CardHeader>
-                  <CardTitle className="text-lg">Community Guidelines</CardTitle>
+                  <CardTitle className="text-lg">
+                    Community Guidelines
+                  </CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-2 text-sm text-muted-foreground">
                   <p>• Be respectful and courteous</p>

@@ -1,19 +1,9 @@
-import { TrendingUp, Tag, Users, HelpCircle } from "lucide-react";
+import { Users, HelpCircle } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Link } from "react-router";
 
 const TrendingSidebar = () => {
-  const trendingTags = [
-    { name: "react", count: 1234, growth: "+12%" },
-    { name: "typescript", count: 987, growth: "+8%" },
-    { name: "javascript", count: 2341, growth: "+15%" },
-    { name: "next.js", count: 543, growth: "+25%" },
-    { name: "tailwind", count: 321, growth: "+18%" },
-    { name: "node.js", count: 876, growth: "+6%" },
-  ];
-
   const featuredQuestions = [
     {
       id: "1",
@@ -50,50 +40,6 @@ const TrendingSidebar = () => {
               <Link to="/ask">Ask Question</Link>
             </Button>
           </div>
-        </CardContent>
-      </Card>
-
-      {/* Trending Tags */}
-      <Card>
-        <CardHeader className="pb-3">
-          <CardTitle className="flex items-center space-x-2 text-lg">
-            <TrendingUp className="h-5 w-5 text-primary" />
-            <span>Trending Tags</span>
-          </CardTitle>
-        </CardHeader>
-        <CardContent className="space-y-3">
-          {trendingTags.map((tag) => (
-            <Link
-              key={tag.name}
-              to={`/tags/${tag.name}`}
-              className="flex items-center justify-between p-3 rounded-lg hover:bg-muted transition-colors group"
-            >
-              <div className="flex items-center space-x-3">
-                <div className="flex items-center justify-center w-8 h-8 bg-tag-bg rounded-md">
-                  <Tag className="h-4 w-4 text-tag-text" />
-                </div>
-                <div>
-                  <div className="font-medium group-hover:text-primary transition-colors">
-                    {tag.name}
-                  </div>
-                  <div className="text-sm text-muted-foreground">
-                    {tag.count.toLocaleString()} questions
-                  </div>
-                </div>
-              </div>
-              <Badge
-                variant="secondary"
-                className="bg-success-light text-success"
-              >
-                {tag.growth}
-              </Badge>
-            </Link>
-          ))}
-          <Link to="/tags">
-            <Button variant="outline" className="w-full mt-3">
-              View All Tags
-            </Button>
-          </Link>
         </CardContent>
       </Card>
 

@@ -12,6 +12,8 @@ const QuestionsPage = () => {
   const [activeFilter, setActiveFilter] = useState("newest");
   const [questions] = useState(sampleQuestions);
 
+  
+
   const getSortedQuestions = () => {
     switch (activeFilter) {
       case "votes":

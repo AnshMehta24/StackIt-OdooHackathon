@@ -1,14 +1,14 @@
 import { apiClient } from "@/apiClient/instance";
-import type { ProfileRoles, SuccessResponse } from "@/types";
+import type { SuccessResponse } from "@/types";
 
 export const userService = {
   getUser: async () => {
     const response = await apiClient.get<
       SuccessResponse<{
-        id: string;
-        name: string;
+        userId: string;
         email: string;
-        role: ProfileRoles;
+        name: string;
+        username: string;
       }>
     >("/api/v1/user");
     return response.data;

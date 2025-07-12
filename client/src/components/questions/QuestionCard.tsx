@@ -1,36 +1,28 @@
-import { ChevronUp, ChevronDown, MessageSquare, Clock } from "lucide-react";
+import {  Clock } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Link } from "react-router";
 
 interface QuestionCardProps {
   id: string;
   title: string;
   content: string;
-  votes: number;
-  answers: number;
   tags: string[];
   author: {
     name: string;
-    avatar?: string;
-    reputation: number;
+    email: string;
   };
   createdAt: string;
-  hasAcceptedAnswer?: boolean;
 }
 
 const QuestionCard = ({
   id,
   title,
   content,
-  votes,
-  answers,
   tags,
   author,
   createdAt,
-  hasAcceptedAnswer = false,
 }: QuestionCardProps) => {
   const formatTimeAgo = (dateString: string) => {
     const date = new Date(dateString);
@@ -48,54 +40,6 @@ const QuestionCard = ({
     <Card className="hover:shadow-hover transition-all duration-200 border-l-4 border-l-transparent hover:border-l-primary">
       <CardContent className="p-6">
         <div className="flex space-x-4">
-          {/* Vote Section */}
-          <div className="flex flex-col items-center space-y-2 min-w-[60px]">
-            <Button
-              variant="ghost"
-              size="sm"
-              className="h-8 w-8 p-0 hover:bg-vote-up/10"
-            >
-              <ChevronUp className="h-5 w-5 text-vote-neutral hover:text-vote-up" />
-            </Button>
-            <span
-              className={`text-lg font-semibold ${
-                votes > 0
-                  ? "text-success"
-                  : votes < 0
-                  ? "text-destructive"
-                  : "text-muted-foreground"
-              }`}
-            >
-              {votes}
-            </span>
-            <Button
-              variant="ghost"
-              size="sm"
-              className="h-8 w-8 p-0 hover:bg-vote-down/10"
-            >
-              <ChevronDown className="h-5 w-5 text-vote-neutral hover:text-vote-down" />
-            </Button>
-          </div>
-
-          {/* Stats Section */}
-          <div className="flex flex-col items-center justify-center space-y-2 min-w-[80px]">
-            <div
-              className={`flex items-center space-x-1 px-2 py-1 rounded-md text-sm ${
-                hasAcceptedAnswer
-                  ? "bg-success text-success-foreground"
-                  : answers > 0
-                  ? "bg-primary-light text-primary"
-                  : "bg-muted text-muted-foreground"
-              }`}
-            >
-              <MessageSquare className="h-4 w-4" />
-              <span className="font-medium">{answers}</span>
-            </div>
-            <span className="text-xs text-muted-foreground">
-              {answers === 1 ? "answer" : "answers"}
-            </span>
-          </div>
-
           {/* Content Section */}
           <div className="flex-1 min-w-0">
             <Link to={`/questions/${id}`} className="block group">
@@ -104,9 +48,10 @@ const QuestionCard = ({
               </h3>
             </Link>
 
-            <p className="text-muted-foreground text-sm line-clamp-3 mb-4">
-              {content}
-            </p>
+            <div
+              dangerouslySetInnerHTML={{ __html: content }}
+              className="text-muted-foreground text-sm line-clamdiv-3 mb-4"
+            ></div>
 
             {/* Tags */}
             <div className="flex flex-wrap gap-2 mb-4">
@@ -129,7 +74,6 @@ const QuestionCard = ({
                 className="flex items-center space-x-2 hover:opacity-80 transition-opacity"
               >
                 <Avatar className="h-6 w-6">
-                  <AvatarImage src={author.avatar} />
                   <AvatarFallback className="text-xs">
                     {author.name
                       .split(" ")
@@ -141,10 +85,6 @@ const QuestionCard = ({
                 <div className="flex items-center space-x-1 text-sm">
                   <span className="font-medium text-foreground">
                     {author.name}
-                  </span>
-                  <span className="text-muted-foreground">•</span>
-                  <span className="text-primary font-medium">
-                    {author.reputation.toLocaleString()}
                   </span>
                 </div>
               </Link>

@@ -12,4 +12,56 @@ export type ErrorResponse<T> = {
   };
 };
 
-export type ProfileRoles = " INSTRUCTOR" | "STUDENT";
+export type Question = {
+  id: string;
+  title: string;
+  tags: string[];
+  description: string;
+  userId: string;
+  createdAt: string;
+  updatedAt: string;
+};
+
+export type Author = {
+  name: string;
+  email: string;
+};
+
+export type QuestionWithAuthor = {
+  question: Question;
+  author: Author;
+};
+
+export type FullQuestionResponse = {
+  question: {
+    id: string;
+    title: string;
+    description: string;
+    tags: string[];
+    userId: string | null;
+    createdAt: Date | null;
+    updatedAt: Date | null;
+  };
+  author: {
+    name: string;
+    email: string;
+  };
+  answers: {
+    answer: {
+      id: string;
+      content: string;
+      questionId: string | null;
+      userId: string | null;
+      createdAt: Date | null;
+      updatedAt: Date | null;
+    };
+    author: {
+      name: string;
+      email: string;
+    };
+  }[];
+  voteStats: {
+    upvotes: number;
+    downvotes: number;
+  };
+};

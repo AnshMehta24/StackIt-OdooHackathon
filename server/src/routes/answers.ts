@@ -4,6 +4,7 @@ import { answers, notifications, questions } from "@/db/schema/schema";
 import { eq } from "drizzle-orm";
 import { AuthenticatedRequest, authMiddleware } from "@/middleware";
 import { answerSchema, updateAnswerSchema } from "@/schema/answerSchema";
+import { successResponse } from "@/common";
 
 const answerRouter = express.Router();
 
@@ -53,7 +54,9 @@ answerRouter.post(
         });
       }
 
-      return res.status(201).json({ message: "Answer created", data: result });
+      return res
+        .status(201)
+        .json(successResponse({ message: "Answer created" }));
     } catch (err) {
       console.error("Insert Error:", err);
       return res.status(500).json({ error: "Failed to create answer" });
