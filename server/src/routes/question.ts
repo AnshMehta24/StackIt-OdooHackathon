@@ -99,12 +99,19 @@ questionRouteHandler.get("/:id", async (req, res) => {
       return res.status(404).json({ error: "Question not found" });
     }
 
-    const relatedAnswers = await db
-      .select()
+    const answersWithUser = await db
+      .select({
+        answer: answers,
+        author: {
+          name: users.name,
+          email: users.email,
+        },
+      })
       .from(answers)
+      .innerJoin(users, eq(answers.userId, users.id))
       .where(eq(answers.questionId, questionId));
 
-    const answerIds = relatedAnswers.map((a) => a.id);
+    const answerIds = answersWithUser.map((a) => a.answer.id);
 
     let upvotes = 0;
     let downvotes = 0;
@@ -128,7 +135,7 @@ questionRouteHandler.get("/:id", async (req, res) => {
     res.status(200).json({
       question: questionWithAuthor[0].question,
       author: questionWithAuthor[0].author,
-      answers: relatedAnswers,
+      answers: answersWithUser,
       voteStats: {
         upvotes,
         downvotes,
