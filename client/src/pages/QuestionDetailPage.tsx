@@ -214,7 +214,6 @@ const QuestionDetailPage = () => {
             </CardContent>
           </Card>
 
-          {/* Answers Section */}
           <div className="mb-8">
             <h2 className="text-xl font-semibold mb-6">
               {answers.length} {answers.length === 1 ? "Answer" : "Answers"}
@@ -232,7 +231,6 @@ const QuestionDetailPage = () => {
                 >
                   <CardContent className="p-6">
                     <div className="flex space-x-6">
-                      {/* Vote Section */}
                       <div className="flex flex-col items-center space-y-3 min-w-[80px]">
                         <Button
                           variant="ghost"

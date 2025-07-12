@@ -11,6 +11,7 @@ import {
 import { useSignIn, useSignUp } from "@/hooks/services/auth";
 import { useUser } from "@/hooks/services/user";
 import { authSchema, type AuthFormData } from "@/schema/auth.";
+import { socket } from "@/socket/socket";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useEffect } from "react";
 import { FormProvider, useForm } from "react-hook-form";
@@ -53,36 +54,35 @@ export default function AuthPage() {
       formData.append(key, val);
     });
 
-    switch (authValue) {
-      case "signUp": {
-        await toast.promise(signUpMutation.mutateAsync(formData), {
-          loading: "Creating account...",
-          success: () => {
-            navigate("/");
-            return "Account created successfully!";
-          },
-          error: (err) => {
-            return err instanceof Error ? err.message : "Something went wrong";
-          },
-        });
-        break;
-      }
-      case "signIn": {
-        await toast.promise(signInMutation.mutateAsync(formData), {
-          loading: "Logging in...",
-          success: () => {
-            navigate("/");
-            return "Logged in successfully!";
-          },
-          error: (err) => {
-            return err instanceof Error ? err.message : "Something went wrong";
-          },
-        });
-        break;
-      }
+    try {
+      switch (authValue) {
+        case "signUp": {
+          toast.loading("Creating account...");
+          const response = await signUpMutation.mutateAsync(formData);
+          socket.emit("join", response.data.userId);
+          toast.success("Account created successfully!");
+          navigate("/");
+          break;
+        }
 
-      default:
-        break;
+        case "signIn": {
+          toast.loading("Logging in...");
+          const response = await signInMutation.mutateAsync(formData);
+          socket.emit("join", response.data.userId);
+          toast.success("Logged in successfully!");
+          console.log("✅ SignIn Response:", response);
+          navigate("/");
+          break;
+        }
+      }
+    } catch (err: unknown) {
+      if (err instanceof Error) {
+        toast.error(err.message);
+        console.error("❌ Auth error:", err.message);
+      } else {
+        toast.error("Something went wrong");
+        console.error("❌ Unknown error:", err);
+      }
     }
   };
 

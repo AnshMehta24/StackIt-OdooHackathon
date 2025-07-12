@@ -3,7 +3,11 @@ import type { SuccessResponse } from "@/types";
 import { useMutation, type UseMutationOptions } from "@tanstack/react-query";
 
 export function useSignUp(
-  options?: UseMutationOptions<SuccessResponse<null>, Error, FormData>
+  options?: UseMutationOptions<
+    SuccessResponse<{ userId: string }>,
+    Error,
+    FormData
+  >
 ) {
   return useMutation({
     mutationKey: ["signUp"],
@@ -13,7 +17,11 @@ export function useSignUp(
 }
 
 export function useSignIn(
-  options?: UseMutationOptions<SuccessResponse<null>, Error, FormData>
+  options?: UseMutationOptions<
+    SuccessResponse<{ userId: string }>,
+    Error,
+    FormData
+  >
 ) {
   return useMutation({
     mutationKey: ["signIn"],
