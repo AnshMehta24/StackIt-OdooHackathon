@@ -12,10 +12,13 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Link } from "react-router";
+import { useLogout } from "@/hooks/services/auth";
+import { toast } from "sonner";
 
 const Header = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [unreadNotifications] = useState(3);
+  const logoutMutation = useLogout();
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
@@ -150,7 +153,18 @@ const Header = () => {
                 <Link to="/answers">Your Answers</Link>
               </DropdownMenuItem>
               <DropdownMenuSeparator />
-              <DropdownMenuItem>Sign out</DropdownMenuItem>
+              <DropdownMenuItem
+                onClick={() => {
+                  logoutMutation.mutate(_, {
+                    onSuccess: () => {
+                      toast.success("Logout Successfull");
+                    },
+                  });
+                }}
+              >
+                {" "}
+                Sign out
+              </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
         </div>

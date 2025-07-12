@@ -21,3 +21,13 @@ export function useSignIn(
     ...options,
   });
 }
+
+export function useLogout(
+  options?: UseMutationOptions<SuccessResponse<null>, Error>
+) {
+  return useMutation({
+    mutationKey: ["logout"],
+    mutationFn: authService.logOut,
+    ...options,
+  });
+}
