@@ -3,6 +3,7 @@ import cookieParser from "cookie-parser";
 import Routes from "./routes/v1.base";
 import cors from "cors";
 import bodyParser from "body-parser";
+import path from "path";
 
 const app = express();
 const port = 3000;
@@ -23,6 +24,8 @@ app.use(
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 app.use(cookieParser());
+
+app.use("/images", express.static(path.join(__dirname, "../public/images")));
 
 app.use("/api/v1", Routes);
 
