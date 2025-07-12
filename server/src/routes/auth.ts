@@ -70,9 +70,12 @@ router.post("/signup", async (req, res) => {
       expires: setTokenExpiry(7),
     });
 
-    return res
-      .status(201)
-      .json(successResponse({ message: "User created successfully" }));
+    return res.status(201).json(
+      successResponse({
+        message: "User created successfully",
+        data: { userId: user.id },
+      })
+    );
   } catch (err) {
     console.error(err);
     return res
@@ -130,9 +133,12 @@ router.post("/login", async (req, res) => {
       expires: setTokenExpiry(7),
     });
 
-    return res
-      .status(200)
-      .json(successResponse({ message: "Login successful" }));
+    return res.status(200).json(
+      successResponse({
+        message: "Login successful",
+        data: { userId: user.id },
+      })
+    );
   } catch (err) {
     console.error(err);
     return res

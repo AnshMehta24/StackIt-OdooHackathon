@@ -23,13 +23,14 @@ app.use(
 
 const server = http.createServer(app);
 
-// Attach Socket.IO to the HTTP server
 const io = new Server(server, {
   cors: {
-    origin: "*", // or specify your frontend origin
+    origin: "http://localhost:5173",
+    credentials: true,
     methods: ["GET", "POST"],
   },
 });
+
 app.set("io", io);
 
 // app.use(express.json());

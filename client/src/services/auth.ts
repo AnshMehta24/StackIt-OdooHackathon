@@ -3,7 +3,7 @@ import type { SuccessResponse } from "@/types";
 
 export const authService = {
   signUp: async (formData: FormData) => {
-    const response = await apiClient.post<SuccessResponse<null>>(
+    const response = await apiClient.post<SuccessResponse<{ userId: string }>>(
       "/api/v1/auth/signup",
       formData
     );
@@ -11,7 +11,7 @@ export const authService = {
   },
 
   signIn: async (formData: FormData) => {
-    const response = await apiClient.post<SuccessResponse<null>>(
+    const response = await apiClient.post<SuccessResponse<{ userId: string }>>(
       "/api/v1/auth/login",
       formData
     );

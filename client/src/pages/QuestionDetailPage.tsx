@@ -201,47 +201,52 @@ const QuestionDetailPage = () => {
             </CardContent>
           </Card>
 
-          {/* Answers Section */}
           <div className="mb-8">
             <h2 className="text-xl font-semibold mb-6">
               {answers.length} {answers.length === 1 ? "Answer" : "Answers"}
             </h2>
             <div className="space-y-6">
-              {answers.map((answerData) => {
-                const { answer, author: answerAuthor } = answerData;
-
-                const answerVotes = 0;
-
-                return (
-                  <Card key={answer.id}>
-                    <CardContent className="p-6">
-                      <div className="flex space-x-6">
-                        {/* Vote Section */}
-                        <div className="flex flex-col items-center space-y-3 min-w-[80px]">
-                          <Button
-                            variant="ghost"
-                            size="lg"
-                            className="h-12 w-12 p-0 hover:bg-vote-up/10"
-                          >
-                            <ChevronUp className="h-8 w-8 text-vote-neutral hover:text-vote-up" />
-                          </Button>
-                          <span
-                            className={`text-2xl font-bold ${
-                              answerVotes > 0
-                                ? "text-success"
-                                : "text-muted-foreground"
-                            }`}
-                          >
-                            {answerVotes}
-                          </span>
-                          <Button
-                            variant="ghost"
-                            size="lg"
-                            className="h-12 w-12 p-0 hover:bg-vote-down/10"
-                          >
-                            <ChevronDown className="h-8 w-8 text-vote-neutral hover:text-vote-down" />
-                          </Button>
-                        </div>
+              {answers.map((answer) => (
+                <Card
+                  key={answer.id}
+                  className={`${
+                    answer.isAccepted
+                      ? "border-success bg-success-light/30"
+                      : ""
+                  }`}
+                >
+                  <CardContent className="p-6">
+                    <div className="flex space-x-6">
+                      <div className="flex flex-col items-center space-y-3 min-w-[80px]">
+                        <Button
+                          variant="ghost"
+                          size="lg"
+                          className="h-12 w-12 p-0 hover:bg-vote-up/10"
+                        >
+                          <ChevronUp className="h-8 w-8 text-vote-neutral hover:text-vote-up" />
+                        </Button>
+                        <span
+                          className={`text-2xl font-bold ${
+                            answer.votes > 0
+                              ? "text-success"
+                              : "text-muted-foreground"
+                          }`}
+                        >
+                          {answer.votes}
+                        </span>
+                        <Button
+                          variant="ghost"
+                          size="lg"
+                          className="h-12 w-12 p-0 hover:bg-vote-down/10"
+                        >
+                          <ChevronDown className="h-8 w-8 text-vote-neutral hover:text-vote-down" />
+                        </Button>
+                        {answer.isAccepted && (
+                          <div className="flex items-center justify-center h-12 w-12 bg-success rounded-full">
+                            <Check className="h-6 w-6 text-success-foreground" />
+                          </div>
+                        )}
+                      </div>
 
                         {/* Content */}
                         <div className="flex-1">
