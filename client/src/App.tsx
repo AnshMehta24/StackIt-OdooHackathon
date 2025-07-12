@@ -5,21 +5,21 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 import { Toaster } from "./components/ui/sonner";
 
+
 const queryClient = new QueryClient({
   defaultOptions: { queries: { retry: false } },
 });
-function App() {
-  return (
-    <BrowserRouter>
-      <QueryClientProvider client={queryClient}>
-        <ThemeProvider defaultTheme="dark" storageKey="vite-ui-theme">
-          <Toaster richColors />
-          <Router />
-          <ReactQueryDevtools initialIsOpen={true} />
-        </ThemeProvider>
-      </QueryClientProvider>
-    </BrowserRouter>
-  );
-}
+
+const App = () => (
+  <BrowserRouter>
+    <QueryClientProvider client={queryClient}>
+      <ThemeProvider defaultTheme="dark" storageKey="vite-ui-theme">
+        {/* <Toaster richColors /> */}
+        <Router />
+        <ReactQueryDevtools initialIsOpen={true} />
+      </ThemeProvider>
+    </QueryClientProvider>
+  </BrowserRouter>
+);
 
 export default App;
