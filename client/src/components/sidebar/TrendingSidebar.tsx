@@ -1,8 +1,8 @@
-import { Link } from "react-router-dom";
 import { TrendingUp, Tag, Users, HelpCircle } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { Link } from "react-router";
 
 const TrendingSidebar = () => {
   const trendingTags = [
@@ -22,7 +22,7 @@ const TrendingSidebar = () => {
       answers: 8,
     },
     {
-      id: "2", 
+      id: "2",
       title: "Best practices for TypeScript error handling",
       votes: 32,
       answers: 5,
@@ -62,7 +62,7 @@ const TrendingSidebar = () => {
           </CardTitle>
         </CardHeader>
         <CardContent className="space-y-3">
-          {trendingTags.map((tag, index) => (
+          {trendingTags.map((tag) => (
             <Link
               key={tag.name}
               to={`/tags/${tag.name}`}
@@ -81,7 +81,10 @@ const TrendingSidebar = () => {
                   </div>
                 </div>
               </div>
-              <Badge variant="secondary" className="bg-success-light text-success">
+              <Badge
+                variant="secondary"
+                className="bg-success-light text-success"
+              >
                 {tag.growth}
               </Badge>
             </Link>
@@ -103,7 +106,7 @@ const TrendingSidebar = () => {
           </CardTitle>
         </CardHeader>
         <CardContent className="space-y-4">
-          {featuredQuestions.map((question, index) => (
+          {featuredQuestions.map((question) => (
             <Link
               key={question.id}
               to={`/questions/${question.id}`}

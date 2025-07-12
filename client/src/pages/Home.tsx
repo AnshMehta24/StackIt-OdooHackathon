@@ -1,5 +1,4 @@
 import { useState } from "react";
-import { Link } from "react-router-dom";
 import Header from "@/components/layout/Header";
 import QuestionCard from "@/components/questions/QuestionCard";
 import QuestionFilters from "@/components/questions/QuestionFilters";
@@ -7,6 +6,7 @@ import TrendingSidebar from "@/components/sidebar/TrendingSidebar";
 import { sampleQuestions } from "@/data/sampleQuestions";
 import { Button } from "@/components/ui/button";
 import { Plus } from "lucide-react";
+import { Link } from "react-router";
 
 const Home: React.FC = () => {
   const [activeFilter, setActiveFilter] = useState("newest");
