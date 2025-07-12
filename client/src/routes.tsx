@@ -5,6 +5,8 @@ import AskQuestionPage from "./pages/AskQuestionPage";
 import QuestionDetailPage from "./pages/QuestionDetailPage";
 import TagsPage from "./pages/TagsPage";
 import NotFound from "./pages/NotFound";
+import AuthPage from "./pages/AuthPage";
+
 
 const routes = () => {
   return (
@@ -18,6 +20,7 @@ const routes = () => {
       {/* <Route path="/users/:username" element={<UserProfilePage />} /> */}
       {/* <Route path="/profile" element={<UserProfilePage />} /> */}
       <Route path="*" element={<NotFound />} />
+      <Route path="/auth" element={<AuthPage />} />
     </Routes>
   );
 };

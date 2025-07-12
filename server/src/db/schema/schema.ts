@@ -14,9 +14,10 @@ export const users = pgTable("users", {
   id: varchar("id", { length: 128 })
     .primaryKey()
     .$defaultFn(() => createId()),
+  name: varchar("name", { length: 50 }).notNull(),
   username: varchar("username", { length: 50 }).notNull().unique(),
   email: varchar("email", { length: 100 }).notNull().unique(),
-  password: varchar("password", { length: 200 }),
+  password: varchar("password", { length: 200 }).notNull(),
   ...timeStampColumns,
 });
 
