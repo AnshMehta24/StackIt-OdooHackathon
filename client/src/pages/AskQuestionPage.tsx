@@ -1,5 +1,4 @@
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
 import Header from "@/components/layout/Header";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -9,6 +8,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { X, Plus, Eye, Edit3 } from "lucide-react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { useNavigate } from "react-router";
 
 const AskQuestionPage = () => {
   const navigate = useNavigate();

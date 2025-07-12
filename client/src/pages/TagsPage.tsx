@@ -1,10 +1,10 @@
 import { useState } from "react";
-import { Link } from "react-router-dom";
 import { Search, Tag, TrendingUp } from "lucide-react";
 import Header from "@/components/layout/Header";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { Link } from "react-router";
 
 interface TagData {
   name: string;
@@ -23,75 +23,77 @@ const TagsPage = () => {
       description: "A JavaScript library for building user interfaces",
       questionCount: 1234,
       todayCount: 15,
-      weekCount: 89
+      weekCount: 89,
     },
     {
       name: "typescript",
       description: "TypeScript extends JavaScript by adding types",
       questionCount: 987,
       todayCount: 12,
-      weekCount: 67
+      weekCount: 67,
     },
     {
-      name: "javascript", 
+      name: "javascript",
       description: "High-level, interpreted programming language",
       questionCount: 2341,
       todayCount: 25,
-      weekCount: 156
+      weekCount: 156,
     },
     {
       name: "next.js",
       description: "React framework for production applications",
       questionCount: 543,
       todayCount: 8,
-      weekCount: 45
+      weekCount: 45,
     },
     {
       name: "tailwind-css",
       description: "Utility-first CSS framework",
       questionCount: 321,
       todayCount: 6,
-      weekCount: 34
+      weekCount: 34,
     },
     {
       name: "node.js",
       description: "JavaScript runtime built on Chrome's V8 engine",
       questionCount: 876,
       todayCount: 11,
-      weekCount: 58
+      weekCount: 58,
     },
     {
       name: "python",
       description: "High-level programming language",
       questionCount: 1567,
       todayCount: 18,
-      weekCount: 92
+      weekCount: 92,
     },
     {
       name: "css",
       description: "Style sheet language for styling web pages",
       questionCount: 1890,
       todayCount: 22,
-      weekCount: 134
-    }
+      weekCount: 134,
+    },
   ];
 
-  const filteredTags = tags.filter(tag =>
-    tag.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    tag.description.toLowerCase().includes(searchQuery.toLowerCase())
+  const filteredTags = tags.filter(
+    (tag) =>
+      tag.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      tag.description.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
   return (
     <div className="min-h-screen bg-background">
       <Header />
-      
+
       <div className="container mx-auto px-4 py-6">
         <div className="max-w-6xl mx-auto">
           {/* Page Header */}
           <div className="mb-8">
             <h1 className="text-3xl font-bold mb-2">Tags</h1>
             <p className="text-muted-foreground mb-6">
-              A tag is a keyword or label that categorizes your question with other, similar questions.
+              A tag is a keyword or label that categorizes your question with
+              other, similar questions.
             </p>
 
             {/* Search */}
@@ -129,22 +131,33 @@ const TagsPage = () => {
 
                     <div className="space-y-2 text-sm">
                       <div className="flex items-center justify-between">
-                        <span className="text-muted-foreground">Questions:</span>
-                        <span className="font-medium">{tag.questionCount.toLocaleString()}</span>
+                        <span className="text-muted-foreground">
+                          Questions:
+                        </span>
+                        <span className="font-medium">
+                          {tag.questionCount.toLocaleString()}
+                        </span>
                       </div>
-                      
+
                       <div className="flex items-center justify-between">
                         <span className="text-muted-foreground">Today:</span>
-                        <Badge variant="secondary" className="bg-secondary-light text-secondary">
+                        <Badge
+                          variant="secondary"
+                          className="bg-secondary-light text-secondary"
+                        >
                           +{tag.todayCount}
                         </Badge>
                       </div>
-                      
+
                       <div className="flex items-center justify-between">
-                        <span className="text-muted-foreground">This week:</span>
+                        <span className="text-muted-foreground">
+                          This week:
+                        </span>
                         <div className="flex items-center space-x-1">
                           <TrendingUp className="h-3 w-3 text-success" />
-                          <span className="text-success font-medium">+{tag.weekCount}</span>
+                          <span className="text-success font-medium">
+                            +{tag.weekCount}
+                          </span>
                         </div>
                       </div>
                     </div>
